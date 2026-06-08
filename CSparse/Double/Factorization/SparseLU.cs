@@ -209,9 +209,18 @@ namespace CSparse.Double.Factorization
             int lnz = S.lnz;
             int unz = S.unz;
 
-            this.L = CompressedColumnStorage<double>.Create(n, n, lnz);
-            this.U = CompressedColumnStorage<double>.Create(n, n, unz);
-            this.pinv = new int[n];
+            if (this.L is null)
+            {
+                this.L = CompressedColumnStorage<double>.Create(n, n, lnz);
+                this.U = CompressedColumnStorage<double>.Create(n, n, unz);
+                this.pinv = new int[n];
+            }
+            else
+            {
+                // Re-factorization (same pattern) : reuse the existing buffers.
+                this.L.Clear();
+                this.U.Clear();
+            }
 
             // Workspace
             var x = this.temp;
